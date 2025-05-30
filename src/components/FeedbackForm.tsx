@@ -177,7 +177,10 @@ const FeedbackForm = () => {
             onError={(e) => {
               // Fallback to text if image fails to load
               e.currentTarget.style.display = 'none';
-              e.currentTarget.nextElementSibling!.style.display = 'block';
+              const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+              if (nextElement) {
+                nextElement.style.display = 'block';
+              }
             }}
           />
           <div style={{ display: 'none' }} className="text-2xl font-bold text-[#073763]">
