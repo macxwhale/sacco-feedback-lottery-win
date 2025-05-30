@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FeedbackHeader } from './feedback/FeedbackHeader';
 import { EnhancedProgressBar } from './feedback/EnhancedProgressBar';
 import { EnhancedQuestionRenderer } from './feedback/EnhancedQuestionRenderer';
@@ -8,6 +7,9 @@ import { ThankYouModal } from './ThankYouModal';
 import { EnhancedLoading } from './feedback/EnhancedLoading';
 import { SuccessAnimation } from './feedback/SuccessAnimation';
 import { useFeedbackForm } from '@/hooks/useFeedbackForm';
+import { ProgressInsights } from './feedback/ProgressInsights';
+import { SmartSuggestions } from './feedback/SmartSuggestions';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 export interface QuestionConfig {
   id: string;
@@ -46,6 +48,23 @@ const FeedbackForm = () => {
     getValidationResult
   } = useFeedbackForm();
 
+  const {
+    trackQuestionStart,
+    trackQuestionResponse,
+    getAverageResponseTime,
+    getEstimatedTimeRemaining,
+    engagementScore
+  } = useAnalytics(responses, questions.length, finalResponses);
+
+  useEffect(() => {
+    trackQuestionStart();
+  }, [currentQuestionIndex, trackQuestionStart]);
+
+  const handleQuestionResponse = (questionId: string, value: any) => {
+    handleResponse(questionId, value);
+    trackQuestionResponse();
+  };
+
   if (isLoading) {
     return <EnhancedLoading />;
   }
@@ -63,11 +82,25 @@ const FeedbackForm = () => {
           completedQuestions={completedQuestions}
         />
 
+        <ProgressInsights
+          currentIndex={currentQuestionIndex}
+          totalQuestions={questions.length}
+          completedQuestions={completedQuestions}
+          estimatedTimeRemaining={getEstimatedTimeRemaining(currentQuestionIndex)}
+          averageResponseTime={getAverageResponseTime()}
+        />
+
         <EnhancedQuestionRenderer
           question={currentQuestion}
           value={responses[currentQuestion?.id]}
-          onChange={(value) => handleResponse(currentQuestion.id, value)}
+          onChange={(value) => handleQuestionResponse(currentQuestion.id, value)}
           validation={getValidationResult(currentQuestion?.id)}
+        />
+
+        <SmartSuggestions
+          currentQuestion={currentQuestion}
+          responses={responses}
+          onSuggestionClick={(value) => handleQuestionResponse(currentQuestion.id, value)}
         />
 
         <NavigationButtons
