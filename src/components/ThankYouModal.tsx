@@ -28,7 +28,7 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold text-[#1e3a8a]">
+          <DialogTitle className="text-center text-2xl font-bold text-[#f97316]">
             Thank You for Your Feedback!
           </DialogTitle>
         </DialogHeader>

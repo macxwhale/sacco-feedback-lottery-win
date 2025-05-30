@@ -17,10 +17,10 @@ export const FeedbackHeader: React.FC = () => {
           }
         }}
       />
-      <div style={{ display: 'none' }} className="text-2xl font-bold text-[#1e3a8a]">
+      <div style={{ display: 'none' }} className="text-2xl font-bold text-[#f97316]">
         Kenya National Police DT SACCO
       </div>
-      <h1 className="text-3xl font-bold text-[#1e3a8a] mt-4">
+      <h1 className="text-3xl font-bold text-[#f97316] mt-4">
         We Value Your Feedback
       </h1>
       <p className="text-gray-600 mt-2">
