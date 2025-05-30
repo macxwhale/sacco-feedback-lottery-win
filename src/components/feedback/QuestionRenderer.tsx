@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarRating } from './StarRating';
@@ -21,12 +20,12 @@ export const QuestionRenderer: React.FC<QuestionRendererProps> = ({
 }) => {
   return (
     <Card className="mb-8 shadow-lg border-0 animate-fade-in">
-      <CardHeader className="bg-gradient-to-r from-[#073763] to-[#007ACE] text-white rounded-t-lg">
+      <CardHeader className="bg-gradient-to-r from-[#1e3a8a] to-[#f97316] text-white rounded-t-lg">
         <CardTitle className="text-xl">
           {question.question}
         </CardTitle>
         {question.required && (
-          <span className="text-blue-200 text-sm">* Required</span>
+          <span className="text-orange-200 text-sm">* Required</span>
         )}
       </CardHeader>
       <CardContent className="p-6">
