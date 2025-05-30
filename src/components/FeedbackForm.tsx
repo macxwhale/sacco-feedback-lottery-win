@@ -8,6 +8,7 @@ import { KeyboardNavigation } from './feedback/KeyboardNavigation';
 import { ThankYouModal } from './ThankYouModal';
 import { EnhancedLoading } from './feedback/EnhancedLoading';
 import { SuccessAnimation } from './feedback/SuccessAnimation';
+import { ResponsiveContainer } from './feedback/ResponsiveContainer';
 import { useFeedbackForm } from '@/hooks/useFeedbackForm';
 import { ProgressInsights } from './feedback/ProgressInsights';
 import { SmartSuggestions } from './feedback/SmartSuggestions';
@@ -17,6 +18,7 @@ import { DataUsageInfo } from './feedback/DataUsageInfo';
 import { SaveContinueOptions } from './feedback/SaveContinueOptions';
 import { usePrivacyConsent } from '@/hooks/usePrivacyConsent';
 import { useSaveContinue } from '@/hooks/useSaveContinue';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 export interface QuestionConfig {
   id: string;
@@ -40,6 +42,7 @@ export interface FeedbackResponse {
 
 const FeedbackForm = () => {
   const [showWelcome, setShowWelcome] = useState(true);
+  const { isMobile } = useMobileDetection();
   
   const {
     questions,
@@ -103,17 +106,17 @@ const FeedbackForm = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-orange-50">
+    <div className={`min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-orange-50 ${isMobile ? 'pb-24' : ''}`}>
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl" />
       </div>
       
-      <div className="relative max-w-4xl mx-auto p-6">
+      <ResponsiveContainer>
         <FeedbackHeader />
         
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
+        <div className={`bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 ${isMobile ? 'p-4' : 'p-8'}`}>
           <PrivacyNotice
             isVisible={showPrivacyNotice}
             onAccept={acceptPrivacy}
@@ -127,19 +130,23 @@ const FeedbackForm = () => {
                 completedQuestions={completedQuestions}
               />
 
-              <SaveContinueOptions
-                onSave={saveProgress}
-                onPause={pauseAndExit}
-                hasUnsavedChanges={hasUnsavedChanges}
-              />
+              {!isMobile && (
+                <>
+                  <SaveContinueOptions
+                    onSave={saveProgress}
+                    onPause={pauseAndExit}
+                    hasUnsavedChanges={hasUnsavedChanges}
+                  />
 
-              <ProgressInsights
-                currentIndex={currentQuestionIndex}
-                totalQuestions={questions.length}
-                completedQuestions={completedQuestions}
-                estimatedTimeRemaining={getEstimatedTimeRemaining(currentQuestionIndex)}
-                averageResponseTime={getAverageResponseTime()}
-              />
+                  <ProgressInsights
+                    currentIndex={currentQuestionIndex}
+                    totalQuestions={questions.length}
+                    completedQuestions={completedQuestions}
+                    estimatedTimeRemaining={getEstimatedTimeRemaining(currentQuestionIndex)}
+                    averageResponseTime={getAverageResponseTime()}
+                  />
+                </>
+              )}
 
               <EnhancedQuestionRenderer
                 question={currentQuestion}
@@ -148,11 +155,13 @@ const FeedbackForm = () => {
                 validation={getValidationResult(currentQuestion?.id)}
               />
 
-              <SmartSuggestions
-                currentQuestion={currentQuestion}
-                responses={responses}
-                onSuggestionClick={(value) => handleQuestionResponse(currentQuestion.id, value)}
-              />
+              {!isMobile && (
+                <SmartSuggestions
+                  currentQuestion={currentQuestion}
+                  responses={responses}
+                  onSuggestionClick={(value) => handleQuestionResponse(currentQuestion.id, value)}
+                />
+              )}
 
               <NavigationButtons
                 currentQuestionIndex={currentQuestionIndex}
@@ -162,34 +171,32 @@ const FeedbackForm = () => {
                 onNext={goToNext}
               />
 
-              <DataUsageInfo />
+              {!isMobile && <DataUsageInfo />}
             </>
           )}
         </div>
-      </div>
+      </ResponsiveContainer>
 
-      {hasConsented && (
-        <>
-          <KeyboardNavigation
-            onNext={goToNext}
-            onPrevious={goToPrevious}
-            canGoNext={isCurrentQuestionAnswered()}
-            isFirstQuestion={currentQuestionIndex === 0}
-          />
-
-          <SuccessAnimation 
-            show={isComplete && !finalResponses.length}
-            message="Feedback Submitted!"
-          />
-
-          <ThankYouModal
-            isOpen={isComplete}
-            responses={finalResponses}
-            questions={questions}
-            onClose={handleReset}
-          />
-        </>
+      {hasConsented && !isMobile && (
+        <KeyboardNavigation
+          onNext={goToNext}
+          onPrevious={goToPrevious}
+          canGoNext={isCurrentQuestionAnswered()}
+          isFirstQuestion={currentQuestionIndex === 0}
+        />
       )}
+
+      <SuccessAnimation 
+        show={isComplete && !finalResponses.length}
+        message="Feedback Submitted!"
+      />
+
+      <ThankYouModal
+        isOpen={isComplete}
+        responses={finalResponses}
+        questions={questions}
+        onClose={handleReset}
+      />
     </div>
   );
 };

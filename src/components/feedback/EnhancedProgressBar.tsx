@@ -3,6 +3,8 @@ import React from 'react';
 import { BreadcrumbNavigation } from './BreadcrumbNavigation';
 import { MotivationalProgress } from './MotivationalProgress';
 import { CompactProgressBar } from './CompactProgressBar';
+import { MobileProgressBar } from './MobileProgressBar';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 interface EnhancedProgressBarProps {
   currentQuestionIndex: number;
@@ -15,6 +17,18 @@ export const EnhancedProgressBar: React.FC<EnhancedProgressBarProps> = ({
   totalQuestions,
   completedQuestions
 }) => {
+  const { isMobile } = useMobileDetection();
+
+  if (isMobile) {
+    return (
+      <MobileProgressBar
+        currentIndex={currentQuestionIndex}
+        totalQuestions={totalQuestions}
+        completedQuestions={completedQuestions}
+      />
+    );
+  }
+
   return (
     <div className="mb-8" role="progressbar" aria-valuenow={currentQuestionIndex + 1} aria-valuemin={1} aria-valuemax={totalQuestions}>
       <BreadcrumbNavigation

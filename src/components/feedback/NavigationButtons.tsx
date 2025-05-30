@@ -1,7 +1,9 @@
 
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AnimatedButton } from './AnimatedButton';
+import { MobileNavigationButtons } from './MobileNavigationButtons';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 interface NavigationButtonsProps {
   currentQuestionIndex: number;
@@ -11,13 +13,14 @@ interface NavigationButtonsProps {
   onNext: () => void;
 }
 
-export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
-  currentQuestionIndex,
-  totalQuestions,
-  canGoNext,
-  onPrevious,
-  onNext
-}) => {
+export const NavigationButtons: React.FC<NavigationButtonsProps> = (props) => {
+  const { isMobile } = useMobileDetection();
+
+  if (isMobile) {
+    return <MobileNavigationButtons {...props} />;
+  }
+
+  const { currentQuestionIndex, totalQuestions, canGoNext, onPrevious, onNext } = props;
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
 
   return (
