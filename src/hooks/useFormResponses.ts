@@ -10,6 +10,10 @@ export const useFormResponses = () => {
     setResponses(prev => ({ ...prev, [questionId]: value }));
   };
 
+  const loadResponses = (savedResponses: Record<string, any>) => {
+    setResponses(savedResponses);
+  };
+
   const generateFinalResponses = (): FeedbackResponse[] => {
     return Object.entries(responses).map(([questionId, value]) => ({
       questionId,
@@ -25,6 +29,7 @@ export const useFormResponses = () => {
   return {
     responses,
     handleResponse,
+    loadResponses,
     generateFinalResponses,
     resetResponses
   };

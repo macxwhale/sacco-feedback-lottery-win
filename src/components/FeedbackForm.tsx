@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { FeedbackHeader } from './feedback/FeedbackHeader';
-import { ProgressBar } from './feedback/ProgressBar';
-import { QuestionRenderer } from './feedback/QuestionRenderer';
+import { EnhancedProgressBar } from './feedback/EnhancedProgressBar';
+import { EnhancedQuestionRenderer } from './feedback/EnhancedQuestionRenderer';
 import { NavigationButtons } from './feedback/NavigationButtons';
 import { ThankYouModal } from './ThankYouModal';
 import { useFeedbackForm } from '@/hooks/useFeedbackForm';
@@ -24,7 +24,7 @@ export interface QuestionConfig {
 export interface FeedbackResponse {
   questionId: string;
   value: any;
-  score: number; // Random score 1-100
+  score: number;
 }
 
 const FeedbackForm = () => {
@@ -35,17 +35,22 @@ const FeedbackForm = () => {
     isComplete,
     finalResponses,
     isLoading,
+    completedQuestions,
     handleResponse,
     isCurrentQuestionAnswered,
     goToNext,
     goToPrevious,
-    resetForm
+    resetForm,
+    getValidationResult
   } = useFeedbackForm();
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#073763]"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#f97316] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your feedback form...</p>
+        </div>
       </div>
     );
   }
@@ -57,15 +62,17 @@ const FeedbackForm = () => {
       <div className="max-w-2xl mx-auto">
         <FeedbackHeader />
         
-        <ProgressBar 
+        <EnhancedProgressBar 
           currentQuestionIndex={currentQuestionIndex}
           totalQuestions={questions.length}
+          completedQuestions={completedQuestions}
         />
 
-        <QuestionRenderer
+        <EnhancedQuestionRenderer
           question={currentQuestion}
           value={responses[currentQuestion?.id]}
           onChange={(value) => handleResponse(currentQuestion.id, value)}
+          validation={getValidationResult(currentQuestion?.id)}
         />
 
         <NavigationButtons
