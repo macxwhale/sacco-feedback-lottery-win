@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { FeedbackHeader } from './feedback/FeedbackHeader';
 import { WelcomeScreen } from './feedback/WelcomeScreen';
@@ -13,6 +12,11 @@ import { useFeedbackForm } from '@/hooks/useFeedbackForm';
 import { ProgressInsights } from './feedback/ProgressInsights';
 import { SmartSuggestions } from './feedback/SmartSuggestions';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { PrivacyNotice } from './feedback/PrivacyNotice';
+import { DataUsageInfo } from './feedback/DataUsageInfo';
+import { SaveContinueOptions } from './feedback/SaveContinueOptions';
+import { usePrivacyConsent } from '@/hooks/usePrivacyConsent';
+import { useSaveContinue } from '@/hooks/useSaveContinue';
 
 export interface QuestionConfig {
   id: string;
@@ -61,6 +65,13 @@ const FeedbackForm = () => {
     engagementScore
   } = useAnalytics(responses, questions.length, finalResponses);
 
+  const { hasConsented, showPrivacyNotice, acceptPrivacy } = usePrivacyConsent();
+  const { saveProgress, pauseAndExit, hasUnsavedChanges } = useSaveContinue(
+    responses,
+    currentQuestionIndex,
+    completedQuestions
+  );
+
   useEffect(() => {
     if (!showWelcome) {
       trackQuestionStart();
@@ -103,61 +114,82 @@ const FeedbackForm = () => {
         <FeedbackHeader />
         
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
-          <EnhancedProgressBar 
-            currentQuestionIndex={currentQuestionIndex}
-            totalQuestions={questions.length}
-            completedQuestions={completedQuestions}
+          <PrivacyNotice
+            isVisible={showPrivacyNotice}
+            onAccept={acceptPrivacy}
           />
 
-          <ProgressInsights
-            currentIndex={currentQuestionIndex}
-            totalQuestions={questions.length}
-            completedQuestions={completedQuestions}
-            estimatedTimeRemaining={getEstimatedTimeRemaining(currentQuestionIndex)}
-            averageResponseTime={getAverageResponseTime()}
-          />
+          {hasConsented && (
+            <>
+              <EnhancedProgressBar 
+                currentQuestionIndex={currentQuestionIndex}
+                totalQuestions={questions.length}
+                completedQuestions={completedQuestions}
+              />
 
-          <EnhancedQuestionRenderer
-            question={currentQuestion}
-            value={responses[currentQuestion?.id]}
-            onChange={(value) => handleQuestionResponse(currentQuestion.id, value)}
-            validation={getValidationResult(currentQuestion?.id)}
-          />
+              <SaveContinueOptions
+                onSave={saveProgress}
+                onPause={pauseAndExit}
+                hasUnsavedChanges={hasUnsavedChanges}
+              />
 
-          <SmartSuggestions
-            currentQuestion={currentQuestion}
-            responses={responses}
-            onSuggestionClick={(value) => handleQuestionResponse(currentQuestion.id, value)}
-          />
+              <ProgressInsights
+                currentIndex={currentQuestionIndex}
+                totalQuestions={questions.length}
+                completedQuestions={completedQuestions}
+                estimatedTimeRemaining={getEstimatedTimeRemaining(currentQuestionIndex)}
+                averageResponseTime={getAverageResponseTime()}
+              />
 
-          <NavigationButtons
-            currentQuestionIndex={currentQuestionIndex}
-            totalQuestions={questions.length}
-            canGoNext={isCurrentQuestionAnswered()}
-            onPrevious={goToPrevious}
-            onNext={goToNext}
-          />
+              <EnhancedQuestionRenderer
+                question={currentQuestion}
+                value={responses[currentQuestion?.id]}
+                onChange={(value) => handleQuestionResponse(currentQuestion.id, value)}
+                validation={getValidationResult(currentQuestion?.id)}
+              />
+
+              <SmartSuggestions
+                currentQuestion={currentQuestion}
+                responses={responses}
+                onSuggestionClick={(value) => handleQuestionResponse(currentQuestion.id, value)}
+              />
+
+              <NavigationButtons
+                currentQuestionIndex={currentQuestionIndex}
+                totalQuestions={questions.length}
+                canGoNext={isCurrentQuestionAnswered()}
+                onPrevious={goToPrevious}
+                onNext={goToNext}
+              />
+
+              <DataUsageInfo />
+            </>
+          )}
         </div>
       </div>
 
-      <KeyboardNavigation
-        onNext={goToNext}
-        onPrevious={goToPrevious}
-        canGoNext={isCurrentQuestionAnswered()}
-        isFirstQuestion={currentQuestionIndex === 0}
-      />
+      {hasConsented && (
+        <>
+          <KeyboardNavigation
+            onNext={goToNext}
+            onPrevious={goToPrevious}
+            canGoNext={isCurrentQuestionAnswered()}
+            isFirstQuestion={currentQuestionIndex === 0}
+          />
 
-      <SuccessAnimation 
-        show={isComplete && !finalResponses.length}
-        message="Feedback Submitted!"
-      />
+          <SuccessAnimation 
+            show={isComplete && !finalResponses.length}
+            message="Feedback Submitted!"
+          />
 
-      <ThankYouModal
-        isOpen={isComplete}
-        responses={finalResponses}
-        questions={questions}
-        onClose={handleReset}
-      />
+          <ThankYouModal
+            isOpen={isComplete}
+            responses={finalResponses}
+            questions={questions}
+            onClose={handleReset}
+          />
+        </>
+      )}
     </div>
   );
 };
