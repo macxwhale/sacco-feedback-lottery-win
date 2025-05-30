@@ -6,6 +6,7 @@ import { useFormNavigation } from './useFormNavigation';
 import { useFormResponses } from './useFormResponses';
 import { useAutoSave } from './useAutoSave';
 import { useFormValidation } from './useFormValidation';
+import { useWebhooks } from './useWebhooks';
 import { useToast } from '@/hooks/use-toast';
 
 export const useFeedbackForm = () => {
