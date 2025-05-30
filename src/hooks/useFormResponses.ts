@@ -1,0 +1,31 @@
+
+import { useState } from 'react';
+import { FeedbackResponse } from '@/components/FeedbackForm';
+import { generateRandomScore } from '@/services/questionsService';
+
+export const useFormResponses = () => {
+  const [responses, setResponses] = useState<Record<string, any>>({});
+
+  const handleResponse = (questionId: string, value: any) => {
+    setResponses(prev => ({ ...prev, [questionId]: value }));
+  };
+
+  const generateFinalResponses = (): FeedbackResponse[] => {
+    return Object.entries(responses).map(([questionId, value]) => ({
+      questionId,
+      value,
+      score: generateRandomScore()
+    }));
+  };
+
+  const resetResponses = () => {
+    setResponses({});
+  };
+
+  return {
+    responses,
+    handleResponse,
+    generateFinalResponses,
+    resetResponses
+  };
+};
