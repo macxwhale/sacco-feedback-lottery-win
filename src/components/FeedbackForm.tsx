@@ -1,5 +1,7 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { FeedbackHeader } from './feedback/FeedbackHeader';
+import { WelcomeScreen } from './feedback/WelcomeScreen';
 import { EnhancedProgressBar } from './feedback/EnhancedProgressBar';
 import { EnhancedQuestionRenderer } from './feedback/EnhancedQuestionRenderer';
 import { NavigationButtons } from './feedback/NavigationButtons';
@@ -32,6 +34,8 @@ export interface FeedbackResponse {
 }
 
 const FeedbackForm = () => {
+  const [showWelcome, setShowWelcome] = useState(true);
+  
   const {
     questions,
     currentQuestionIndex,
@@ -57,59 +61,82 @@ const FeedbackForm = () => {
   } = useAnalytics(responses, questions.length, finalResponses);
 
   useEffect(() => {
-    trackQuestionStart();
-  }, [currentQuestionIndex, trackQuestionStart]);
+    if (!showWelcome) {
+      trackQuestionStart();
+    }
+  }, [currentQuestionIndex, trackQuestionStart, showWelcome]);
 
   const handleQuestionResponse = (questionId: string, value: any) => {
     handleResponse(questionId, value);
     trackQuestionResponse();
   };
 
+  const handleStart = () => {
+    setShowWelcome(false);
+  };
+
+  const handleReset = () => {
+    resetForm();
+    setShowWelcome(true);
+  };
+
   if (isLoading) {
     return <EnhancedLoading />;
+  }
+
+  if (showWelcome) {
+    return <WelcomeScreen onStart={handleStart} />;
   }
 
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white p-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-orange-50">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl" />
+      </div>
+      
+      <div className="relative max-w-4xl mx-auto p-6">
         <FeedbackHeader />
         
-        <EnhancedProgressBar 
-          currentQuestionIndex={currentQuestionIndex}
-          totalQuestions={questions.length}
-          completedQuestions={completedQuestions}
-        />
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
+          <EnhancedProgressBar 
+            currentQuestionIndex={currentQuestionIndex}
+            totalQuestions={questions.length}
+            completedQuestions={completedQuestions}
+          />
 
-        <ProgressInsights
-          currentIndex={currentQuestionIndex}
-          totalQuestions={questions.length}
-          completedQuestions={completedQuestions}
-          estimatedTimeRemaining={getEstimatedTimeRemaining(currentQuestionIndex)}
-          averageResponseTime={getAverageResponseTime()}
-        />
+          <ProgressInsights
+            currentIndex={currentQuestionIndex}
+            totalQuestions={questions.length}
+            completedQuestions={completedQuestions}
+            estimatedTimeRemaining={getEstimatedTimeRemaining(currentQuestionIndex)}
+            averageResponseTime={getAverageResponseTime()}
+          />
 
-        <EnhancedQuestionRenderer
-          question={currentQuestion}
-          value={responses[currentQuestion?.id]}
-          onChange={(value) => handleQuestionResponse(currentQuestion.id, value)}
-          validation={getValidationResult(currentQuestion?.id)}
-        />
+          <EnhancedQuestionRenderer
+            question={currentQuestion}
+            value={responses[currentQuestion?.id]}
+            onChange={(value) => handleQuestionResponse(currentQuestion.id, value)}
+            validation={getValidationResult(currentQuestion?.id)}
+          />
 
-        <SmartSuggestions
-          currentQuestion={currentQuestion}
-          responses={responses}
-          onSuggestionClick={(value) => handleQuestionResponse(currentQuestion.id, value)}
-        />
+          <SmartSuggestions
+            currentQuestion={currentQuestion}
+            responses={responses}
+            onSuggestionClick={(value) => handleQuestionResponse(currentQuestion.id, value)}
+          />
 
-        <NavigationButtons
-          currentQuestionIndex={currentQuestionIndex}
-          totalQuestions={questions.length}
-          canGoNext={isCurrentQuestionAnswered()}
-          onPrevious={goToPrevious}
-          onNext={goToNext}
-        />
+          <NavigationButtons
+            currentQuestionIndex={currentQuestionIndex}
+            totalQuestions={questions.length}
+            canGoNext={isCurrentQuestionAnswered()}
+            onPrevious={goToPrevious}
+            onNext={goToNext}
+          />
+        </div>
       </div>
 
       <SuccessAnimation 
@@ -121,7 +148,7 @@ const FeedbackForm = () => {
         isOpen={isComplete}
         responses={finalResponses}
         questions={questions}
-        onClose={resetForm}
+        onClose={handleReset}
       />
     </div>
   );
