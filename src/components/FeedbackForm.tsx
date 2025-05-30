@@ -5,6 +5,7 @@ import { WelcomeScreen } from './feedback/WelcomeScreen';
 import { EnhancedProgressBar } from './feedback/EnhancedProgressBar';
 import { EnhancedQuestionRenderer } from './feedback/EnhancedQuestionRenderer';
 import { NavigationButtons } from './feedback/NavigationButtons';
+import { KeyboardNavigation } from './feedback/KeyboardNavigation';
 import { ThankYouModal } from './ThankYouModal';
 import { EnhancedLoading } from './feedback/EnhancedLoading';
 import { SuccessAnimation } from './feedback/SuccessAnimation';
@@ -138,6 +139,13 @@ const FeedbackForm = () => {
           />
         </div>
       </div>
+
+      <KeyboardNavigation
+        onNext={goToNext}
+        onPrevious={goToPrevious}
+        canGoNext={isCurrentQuestionAnswered()}
+        isFirstQuestion={currentQuestionIndex === 0}
+      />
 
       <SuccessAnimation 
         show={isComplete && !finalResponses.length}
