@@ -5,6 +5,8 @@ import { EnhancedProgressBar } from './feedback/EnhancedProgressBar';
 import { EnhancedQuestionRenderer } from './feedback/EnhancedQuestionRenderer';
 import { NavigationButtons } from './feedback/NavigationButtons';
 import { ThankYouModal } from './ThankYouModal';
+import { EnhancedLoading } from './feedback/EnhancedLoading';
+import { SuccessAnimation } from './feedback/SuccessAnimation';
 import { useFeedbackForm } from '@/hooks/useFeedbackForm';
 
 export interface QuestionConfig {
@@ -45,14 +47,7 @@ const FeedbackForm = () => {
   } = useFeedbackForm();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#f97316] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your feedback form...</p>
-        </div>
-      </div>
-    );
+    return <EnhancedLoading />;
   }
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -83,6 +78,11 @@ const FeedbackForm = () => {
           onNext={goToNext}
         />
       </div>
+
+      <SuccessAnimation 
+        show={isComplete && !finalResponses.length}
+        message="Feedback Submitted!"
+      />
 
       <ThankYouModal
         isOpen={isComplete}

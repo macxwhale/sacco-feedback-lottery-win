@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { AnimatedButton } from './AnimatedButton';
 
 interface NavigationButtonsProps {
   currentQuestionIndex: number;
@@ -21,27 +21,25 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
 
   return (
-    <div className="flex justify-between items-center">
-      <Button
+    <div className="flex justify-between items-center animate-fade-in">
+      <AnimatedButton
         variant="outline"
         onClick={onPrevious}
         disabled={currentQuestionIndex === 0}
+        icon={ChevronLeft}
         className="border-[#073763] text-[#073763] hover:bg-[#073763] hover:text-white"
       >
-        <ChevronLeft className="mr-2 h-4 w-4" />
         Previous
-      </Button>
+      </AnimatedButton>
 
-      <Button
+      <AnimatedButton
         onClick={onNext}
         disabled={!canGoNext}
+        icon={!isLastQuestion ? ChevronRight : undefined}
         className="bg-gradient-to-r from-[#073763] to-[#007ACE] hover:from-[#062c52] hover:to-[#0066a6] text-white"
       >
         {isLastQuestion ? 'Submit' : 'Next'}
-        {!isLastQuestion && (
-          <ChevronRight className="ml-2 h-4 w-4" />
-        )}
-      </Button>
+      </AnimatedButton>
     </div>
   );
 };
