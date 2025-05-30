@@ -13,6 +13,13 @@ export const fetchQuestions = async (): Promise<QuestionConfig[]> => {
       required: true,
     },
     {
+      id: 'service-emoji',
+      type: 'emoji',
+      question: 'How do you feel about our customer service?',
+      required: true,
+      options: ['😠', '😞', '😐', '😊', '😍']
+    },
+    {
       id: 'nps',
       type: 'nps',
       question: 'How likely are you to recommend Police Sacco to a friend or colleague?',
@@ -28,6 +35,38 @@ export const fetchQuestions = async (): Promise<QuestionConfig[]> => {
         max: 5,
         minLabel: 'Strongly Disagree',
         maxLabel: 'Strongly Agree'
+      }
+    },
+    {
+      id: 'interest-rate',
+      type: 'slider',
+      question: 'How would you rate our interest rates?',
+      required: true,
+      scale: {
+        min: 1,
+        max: 10,
+        minLabel: 'Poor',
+        maxLabel: 'Excellent'
+      }
+    },
+    {
+      id: 'service-ranking',
+      type: 'ranking',
+      question: 'Rank these services by importance to you (drag to reorder)',
+      required: true,
+      options: ['Savings Account', 'Loans', 'Insurance', 'Investment', 'Mobile Banking']
+    },
+    {
+      id: 'service-matrix',
+      type: 'matrix',
+      question: 'Rate each aspect of our services',
+      required: true,
+      options: ['Speed', 'Quality', 'Value', 'Support'],
+      scale: {
+        min: 1,
+        max: 5,
+        minLabel: 'Poor',
+        maxLabel: 'Excellent'
       }
     },
     {

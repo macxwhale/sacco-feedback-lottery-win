@@ -9,7 +9,7 @@ import { useFeedbackForm } from '@/hooks/useFeedbackForm';
 
 export interface QuestionConfig {
   id: string;
-  type: 'star' | 'nps' | 'likert' | 'single-choice' | 'multi-choice' | 'text';
+  type: 'star' | 'nps' | 'likert' | 'single-choice' | 'multi-choice' | 'text' | 'emoji' | 'ranking' | 'matrix' | 'slider';
   question: string;
   required: boolean;
   options?: string[];

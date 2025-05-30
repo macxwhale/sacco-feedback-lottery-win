@@ -21,8 +21,12 @@ export const useFormValidation = () => {
         errors.push('This field is required');
       }
       
-      if (question.type === 'multi-choice' && Array.isArray(value) && value.length === 0) {
+      if ((question.type === 'multi-choice' || question.type === 'ranking') && Array.isArray(value) && value.length === 0) {
         errors.push('Please select at least one option');
+      }
+
+      if (question.type === 'matrix' && (!value || Object.keys(value).length === 0)) {
+        errors.push('Please rate all aspects');
       }
     }
 
@@ -48,6 +52,22 @@ export const useFormValidation = () => {
       case 'nps':
         if (value !== undefined && (value < 0 || value > 10)) {
           errors.push('NPS score must be between 0 and 10');
+        }
+        break;
+
+      case 'slider':
+        const scale = question.scale || { min: 1, max: 10 };
+        if (value !== undefined && (value < scale.min || value > scale.max)) {
+          errors.push(`Value must be between ${scale.min} and ${scale.max}`);
+        }
+        break;
+
+      case 'matrix':
+        if (value && question.options) {
+          const missingRatings = question.options.filter(option => !value[option]);
+          if (missingRatings.length > 0 && question.required) {
+            errors.push(`Please rate: ${missingRatings.join(', ')}`);
+          }
         }
         break;
     }

@@ -7,6 +7,10 @@ import { NPSRating } from './NPSRating';
 import { LikertScale } from './LikertScale';
 import { MultipleChoice } from './MultipleChoice';
 import { OpenText } from './OpenText';
+import { EmojiRating } from './EmojiRating';
+import { RankingQuestion } from './RankingQuestion';
+import { MatrixQuestion } from './MatrixQuestion';
+import { EnhancedSlider } from './EnhancedSlider';
 import { QuestionConfig } from '../FeedbackForm';
 import { AlertCircle, CheckCircle, Info } from 'lucide-react';
 
@@ -29,6 +33,32 @@ export const EnhancedQuestionRenderer: React.FC<EnhancedQuestionRendererProps> =
 }) => {
   const hasValue = value !== undefined && value !== null && value !== '';
   const isValid = validation?.isValid !== false;
+
+  const renderQuestionInput = () => {
+    switch (question.type) {
+      case 'star':
+        return <StarRating value={value || 0} onChange={onChange} />;
+      case 'nps':
+        return <NPSRating value={value} onChange={onChange} />;
+      case 'likert':
+        return <LikertScale value={value} onChange={onChange} scale={question.scale} />;
+      case 'emoji':
+        return <EmojiRating value={value} onChange={onChange} options={question.options || []} />;
+      case 'ranking':
+        return <RankingQuestion value={value} onChange={onChange} options={question.options || []} />;
+      case 'matrix':
+        return <MatrixQuestion value={value} onChange={onChange} options={question.options || []} scale={question.scale} />;
+      case 'slider':
+        return <EnhancedSlider value={value} onChange={onChange} scale={question.scale} />;
+      case 'single-choice':
+      case 'multi-choice':
+        return <MultipleChoice options={question.options || []} value={value} onChange={onChange} multiple={question.type === 'multi-choice'} />;
+      case 'text':
+        return <OpenText value={value || ''} onChange={onChange} placeholder="Please share your thoughts..." />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <Card className="mb-8 shadow-lg border-0 animate-fade-in">
@@ -54,7 +84,6 @@ export const EnhancedQuestionRenderer: React.FC<EnhancedQuestionRendererProps> =
       </CardHeader>
       
       <CardContent className="p-6">
-        {/* Validation Messages */}
         {validation?.errors && validation.errors.length > 0 && (
           <Alert className="mb-4 border-red-200 bg-red-50">
             <AlertCircle className="h-4 w-4 text-red-600" />
@@ -74,40 +103,7 @@ export const EnhancedQuestionRenderer: React.FC<EnhancedQuestionRendererProps> =
         )}
 
         <div role="group" aria-labelledby={`question-${question.id}`}>
-          {question.type === 'star' && (
-            <StarRating
-              value={value || 0}
-              onChange={onChange}
-            />
-          )}
-          {question.type === 'nps' && (
-            <NPSRating
-              value={value}
-              onChange={onChange}
-            />
-          )}
-          {question.type === 'likert' && (
-            <LikertScale
-              value={value}
-              onChange={onChange}
-              scale={question.scale}
-            />
-          )}
-          {(question.type === 'single-choice' || question.type === 'multi-choice') && (
-            <MultipleChoice
-              options={question.options || []}
-              value={value}
-              onChange={onChange}
-              multiple={question.type === 'multi-choice'}
-            />
-          )}
-          {question.type === 'text' && (
-            <OpenText
-              value={value || ''}
-              onChange={onChange}
-              placeholder="Please share your thoughts..."
-            />
-          )}
+          {renderQuestionInput()}
         </div>
       </CardContent>
     </Card>
