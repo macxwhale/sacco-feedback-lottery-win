@@ -1,30 +1,30 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { Settings } from 'lucide-react';
 
 export const FeedbackHeader: React.FC = () => {
   return (
-    <div className="mb-8 text-center">
-      <img 
-        src="/lovable-uploads/367347fe-02da-4338-b8ba-91138293d303.png" 
-        alt="Kenya National Police DT SACCO"
-        className="h-20 mx-auto mb-4"
-        onError={(e) => {
-          // Fallback to text if image fails to load
-          e.currentTarget.style.display = 'none';
-          const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-          if (nextElement) {
-            nextElement.style.display = 'block';
-          }
-        }}
-      />
-      <div style={{ display: 'none' }} className="text-2xl font-bold text-[#1e3a8a]">
-        Kenya National Police DT SACCO
+    <div className="text-center mb-8 relative">
+      <Link 
+        to="/admin" 
+        className="absolute top-0 right-0 p-2 text-gray-400 hover:text-[#073763] transition-colors"
+        title="Admin Dashboard"
+      >
+        <Settings size={20} />
+      </Link>
+      <div className="mb-4">
+        <img 
+          src="/lovable-uploads/367347fe-02da-4338-b8ba-91138293d303.png" 
+          alt="Police Sacco Logo" 
+          className="h-16 mx-auto mb-4"
+        />
       </div>
-      <h1 className="text-3xl font-bold text-[#1e3a8a] mt-4">
-        We Value Your Feedback
+      <h1 className="text-3xl font-bold text-[#073763] mb-2">
+        Police Sacco Feedback
       </h1>
-      <p className="text-gray-600 mt-2">
-        Help us serve you better by sharing your experience
+      <p className="text-gray-600 max-w-md mx-auto">
+        Help us improve our services by sharing your experience with us.
       </p>
     </div>
   );
