@@ -14,10 +14,10 @@ export const TotalScore: React.FC<TotalScoreProps> = ({ responses }) => {
     <Card className="bg-gray-50">
       <CardContent className="p-4">
         <div className="flex justify-between items-center">
-          <span className="text-lg font-semibold text-[#f97316]">
+          <span className="text-lg font-semibold text-[#1e3a8a]">
             Total Points Earned:
           </span>
-          <span className="text-2xl font-bold text-[#1e3a8a]">
+          <span className="text-2xl font-bold text-[#f97316]">
             {totalScore} pts
           </span>
         </div>
